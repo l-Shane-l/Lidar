@@ -142,7 +142,7 @@ auto startTime = std::chrono::steady_clock::now();
 		{
 			if(inliers.count(index)>0)
 				continue;
-			pcl::PointXYZ point = cloud->points[index];
+			auto point = cloud->points[index];
 			float x4 = point.x;
 			float y4 = point.y;
 			float z4 = point.z;
