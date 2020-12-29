@@ -34,12 +34,14 @@ std::vector<Car> initHighway(bool renderScene, pcl::visualization::PCLVisualizer
     return cars;
 }
 
-void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer, boost::shared_ptr<ProcessPointClouds<pcl::PointXYZI>> pointProcessorI)
 {
     ProcessPointClouds<pcl::PointXYZI> pointProcessor;
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessor.loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
-
-    renderPointCloud(viewer,inputCloud,"cloud");
+    pcl::PointCloud<pcl::PointXYZI>::Ptr filterCloud;
+    filterCloud = pointProcessorI->FilterCloud(inputCloud, 0.3, Eigen::Vector4f (-10, -6, -3, 1), Eigen::Vector4f (30, 7, 2, 1));
+    renderPointCloud(viewer,filterCloud,"cloud");
+    // renderPointCloud(viewer,inputCloud,"cloud");
 }
 
 
@@ -115,12 +117,12 @@ void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& vi
 int main (int argc, char** argv)
 {
     std::cout << "starting enviroment" << std::endl;
-
+    auto pointProcessorI = boost::make_shared<ProcessPointClouds<pcl::PointXYZI>>();
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
     //simpleHighway(viewer);
-    cityBlock(viewer);
+    cityBlock(viewer, pointProcessorI);
     while (!viewer->wasStopped ())
     {
         viewer->spinOnce ();
